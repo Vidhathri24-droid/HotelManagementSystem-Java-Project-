@@ -6,7 +6,7 @@ import java.sql.*;
 public class BillingService {
     public static double calculateBill(int roomId, String checkIn, String checkOut, int numPeople) {
         double pricePerNight = 0;
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement("SELECT price FROM rooms WHERE id = ?")) {
             stmt.setInt(1, roomId);
             ResultSet rs = stmt.executeQuery();
