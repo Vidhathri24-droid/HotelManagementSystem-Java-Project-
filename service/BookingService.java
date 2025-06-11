@@ -8,7 +8,7 @@ public class BookingService {
 
     public static int getUserIdByUsername(String username) {
         String query = "SELECT id FROM users WHERE username = ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -23,7 +23,7 @@ public class BookingService {
 
     public static List<String> getHotelBranches() {
         List<String> branches = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT name FROM hotel_branches")) {
             while (rs.next()) {
@@ -40,7 +40,7 @@ public class BookingService {
         String query = "SELECT r.id, r.room_type FROM rooms r " +
                        "JOIN hotel_branches hb ON r.branch_id = hb.id " +
                        "WHERE hb.name = ? AND r.is_available = TRUE";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, branchName);
             ResultSet rs = stmt.executeQuery();
@@ -54,7 +54,7 @@ public class BookingService {
     }
 
     public static int bookRoomWithGuestsAndReturnId(int userId, int roomId, String checkIn, String checkOut, double total, String guestNamesCSV) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024")) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "")) {
             conn.setAutoCommit(false);
 
             PreparedStatement bookStmt = conn.prepareStatement(
@@ -96,7 +96,7 @@ public class BookingService {
     }
 
     public static boolean cancelBooking(int bookingId) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024")) {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "")) {
             PreparedStatement roomStmt = conn.prepareStatement("SELECT room_id FROM bookings WHERE id = ?");
             roomStmt.setInt(1, bookingId);
             ResultSet rs = roomStmt.executeQuery();
@@ -122,7 +122,7 @@ public class BookingService {
     public static void refreshRoomAvailability() {
         String query = "UPDATE rooms r SET r.is_available = TRUE " +
                        "WHERE r.id NOT IN (SELECT room_id FROM bookings WHERE checkout_date >= CURDATE())";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.executeUpdate();
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public class BookingService {
 
     public static List<String> getAllBookings() {
         List<String> bookings = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
                  "SELECT b.id, u.username, r.id AS room_id, r.room_type, b.checkin_date, b.checkout_date, b.total_cost " +
@@ -157,7 +157,7 @@ public class BookingService {
                        "FROM bookings b JOIN users u ON b.user_id = u.id " +
                        "JOIN rooms r ON b.room_id = r.id " +
                        "WHERE u.username LIKE ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, "%" + name + "%");
             ResultSet rs = stmt.executeQuery();
@@ -179,7 +179,7 @@ public class BookingService {
         List<String> rooms = new ArrayList<>();
         String sql = "SELECT r.id, r.room_type, r.price, hb.name AS branch FROM rooms r " +
                      "JOIN hotel_branches hb ON r.branch_id = hb.id WHERE r.is_available = TRUE";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -196,7 +196,7 @@ public class BookingService {
 
     public static boolean addRoom(int branchId, String roomType, double price) {
         String sql = "INSERT INTO rooms (branch_id, room_type, price, is_available) VALUES (?, ?, ?, TRUE)";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, branchId);
             stmt.setString(2, roomType);
@@ -211,7 +211,7 @@ public class BookingService {
 
     public static boolean removeRoom(int roomId) {
         String sql = "DELETE FROM rooms WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, roomId);
             stmt.executeUpdate();
