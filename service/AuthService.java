@@ -6,7 +6,7 @@ import java.sql.*;
 public class AuthService {
     public static boolean login(String username, String password, String role) {
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+                "jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT * FROM users WHERE username=? AND password=? AND role=?")) {
             stmt.setString(1, username);
@@ -22,7 +22,7 @@ public class AuthService {
 
     public static boolean signup(String username, String password) {
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/hotel_db1", "root", "09082024");
+                "jdbc:mysql://localhost:3306/hotel_db", "root", "");
              PreparedStatement stmt = conn.prepareStatement(
                      "INSERT INTO users (username, password, role) VALUES (?, ?, 'customer')")) {
             stmt.setString(1, username);
